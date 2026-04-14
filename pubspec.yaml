@@ -1,0 +1,35 @@
+name: cardex
+description: Un Pokedex pour voitures avec géolocalisation et mode hors-ligne.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Gestion d'état recommandée pour séparer la logique de l'UI
+  provider: ^6.1.1
+  # Pour formater les dates proprement
+  intl: ^0.20.2
+  
+  # --- PACKAGES À INSTALLER PLUS TARD POUR LES FONCTIONNALITÉS NATIVES ---
+  # camera: ^0.10.5+9
+  # geolocator: ^10.1.0
+  sqflite: ^2.3.0
+  path_provider: ^2.1.1
+  path: ^1.9.0
+  supabase_flutter: ^2.12.2
+  camera: ^0.12.0+1
+  google_generative_ai: ^0.4.7
+  image_picker: ^1.2.1
+  # supabase_flutter: ^2.3.0 (Pour l'API Distante requise)
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
