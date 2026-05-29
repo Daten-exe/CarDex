@@ -1,17 +1,47 @@
-# cardex
+# CarDex
 
-A new Flutter project.
+Un Pokédex pour les voitures — scanne n'importe quel véhicule avec ton appareil photo et l'IA (Google Gemini) identifie la marque, le modèle, l'année et la puissance en temps réel.
 
-## Getting Started
+## Fonctionnalités
 
-This project is a starting point for a Flutter application.
+- **Scanner IA** : prends une photo ou importe depuis la galerie pour identifier une voiture
+- **Collection** : consulte toutes les voitures découvertes par la communauté ; les tiennes sont débloquées
+- **Historique** : vois les voitures que tu as personnellement scannées avec la date et le lieu
+- **Cloud** : tes captures sont synchronisées sur tous tes appareils via Supabase
 
-A few resources to get you started if this is your first Flutter project:
+## Stack technique
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+- Flutter (iOS, Android, Web, Desktop)
+- Supabase (authentification + base de données cloud)
+- Google Gemini (reconnaissance d'image IA)
+- Provider (gestion d'état)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Configuration
+
+Les clés API sont injectées via `--dart-define` au moment du build. Ne jamais les écrire dans le code source.
+
+```bash
+flutter run \
+  --dart-define=SUPABASE_URL=https://xxx.supabase.co \
+  --dart-define=SUPABASE_ANON_KEY=eyJ... \
+  --dart-define=GEMINI_API_KEY=AIza...
+```
+
+Pour VS Code, crée un fichier `.vscode/launch.json` :
+
+```json
+{
+  "configurations": [
+    {
+      "name": "CarDex",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define=SUPABASE_URL=https://xxx.supabase.co",
+        "--dart-define=SUPABASE_ANON_KEY=eyJ...",
+        "--dart-define=GEMINI_API_KEY=AIza..."
+      ]
+    }
+  ]
+}
+```

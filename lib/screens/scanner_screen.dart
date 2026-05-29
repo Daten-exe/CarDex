@@ -18,31 +18,31 @@ class _ScannerScreenState extends State<ScannerScreen> {
   @override
   void initState() {
     super.initState();
-    // On demande au provider d'allumer la caméra
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<CarDexState>(context, listen: false).initCamera();
     });
   }
 
-  // --- GESTION DES ACTIONS ---
+  @override
+  void dispose() {
+    Provider.of<CarDexState>(context, listen: false).disposeCamera();
+    super.dispose();
+  }
 
   Future<void> _handleScan(BuildContext context, {bool fromGallery = false}) async {
     final state = Provider.of<CarDexState>(context, listen: false);
     XFile? photo;
-
     try {
       if (fromGallery) {
         photo = await ImagePicker().pickImage(
           source: ImageSource.gallery,
-          imageQuality: 60, // Compression pour éviter l'erreur 503 de Gemini
+          imageQuality: 60,
           maxWidth: 1024,
         );
       } else {
         photo = await state.cameraController?.takePicture();
       }
-
       if (photo != null) {
-        // L'IA travaille dans le Provider
         final car = await state.analyzeCarImage(photo);
         if (car != null && mounted) {
           _showSuccessDialog(context, car);
@@ -59,26 +59,19 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // On "écoute" le provider. Dès que notifyListeners() est appelé, build() se relance.
     final state = context.watch<CarDexState>();
-
-    // Si la caméra n'est pas prête
     if (state.cameraController == null || !state.cameraController!.value.isInitialized) {
       return const Scaffold(
         backgroundColor: Color(0xFF0F1411),
         body: Center(child: CircularProgressIndicator(color: Color(0xFF2EBD69))),
       );
     }
-
     return Scaffold(
       backgroundColor: const Color(0xFF0F1411),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // 1. Caméra et Viseur
           _buildScannerOverlay(state.cameraController!),
-
-          // 2. Écran de chargement IA (géré par le Provider)
           if (state.isScanningAI)
             Container(
               color: const Color(0xFF0F1411).withOpacity(0.85),
@@ -91,8 +84,6 @@ class _ScannerScreenState extends State<ScannerScreen> {
                 ],
               ),
             ),
-
-          // 3. Boutons
           Positioned(
             bottom: 110, left: 0, right: 0,
             child: Center(
@@ -122,8 +113,6 @@ class _ScannerScreenState extends State<ScannerScreen> {
       ),
     );
   }
-
-  // --- WIDGETS UI (Sans logique) ---
 
   Widget _buildScannerOverlay(CameraController controller) {
     return IgnorePointer(
@@ -200,7 +189,6 @@ class _ScannerScreenState extends State<ScannerScreen> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(15),
-              // CORRECTION DU BUG DE TAILLE : Utilisation de MediaQuery au lieu de double.infinity
               child: car.imageUrl.startsWith('http')
                   ? Image.network(car.imageUrl, height: 140, width: MediaQuery.of(context).size.width, fit: BoxFit.cover)
                   : Image.file(File(car.imageUrl), height: 140, width: MediaQuery.of(context).size.width, fit: BoxFit.cover),
